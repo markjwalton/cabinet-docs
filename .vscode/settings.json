@@ -1,0 +1,32 @@
+{
+    "npm.packageManager": "npm",
+    "npm.enableRunFromFolder": true,
+    "git.autofetch": true,
+    "errorLens.alignMessage": {
+        "start": 0,
+        "end": 0,
+        "minimumMargin": 4,
+        "padding": [
+            0,
+            0
+        ],
+        "useFixedPosition": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "eslint.validate": ["typescript", "typescriptreact"],
+    "editor.formatOnSave": true,
+    "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+    "errorLens.excludeBySource": ["eslint(prettier)"],
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.suggest.autoImports": true
+}
