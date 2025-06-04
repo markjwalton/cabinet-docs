@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * Root Layout Component with AppInitializer
@@ -6,6 +6,7 @@
  * This component wraps the entire application with the AppInitializer
  * to ensure database migrations and form schemas are set up.
  * It also includes the NavigationProvider and Navbar for site-wide navigation.
+ * Now includes ThemeProvider for application-wide theming support.
  */
 
 import React from 'react';
@@ -14,6 +15,7 @@ import './globals.css';
 import { DataProvider } from '@/contexts/DataContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { NavigationProvider } from '@/contexts/NavigationContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navbar from '@/components/ui/layout/Navbar';
 import AppInitializer from '@/components/app/AppInitializer';
 
@@ -30,12 +32,14 @@ export default function RootLayout({
         <NotificationProvider>
           <DataProvider>
             <NavigationProvider>
-              <AppInitializer>
-                <Navbar />
-                <div className="pt-16">
-                  {children}
-                </div>
-              </AppInitializer>
+              <ThemeProvider>
+                <AppInitializer>
+                  <Navbar />
+                  <div className="pt-16">
+                    {children}
+                  </div>
+                </AppInitializer>
+              </ThemeProvider>
             </NavigationProvider>
           </DataProvider>
         </NotificationProvider>

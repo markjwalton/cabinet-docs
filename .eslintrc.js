@@ -1,13 +1,7 @@
 // .eslintrc.js
 module.exports = {
   parser: '@typescript-eslint/parser',
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended', // This is the important addition for hooks
-    'next/core-web-vitals'
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:react/recommended', 'plugin:react-hooks/recommended', 'next/core-web-vitals', 'plugin:storybook/recommended'],
   plugins: [
     '@typescript-eslint',
     'react',

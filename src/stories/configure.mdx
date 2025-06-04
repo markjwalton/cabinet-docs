@@ -1,0 +1,199 @@
+# Theme Configuration
+
+This guide explains how to set up and use the theming system in your Cabinet application. The theming system allows you to customise the appearance of your application with different colour schemes, border radii, and font families.
+
+## Table of Contents
+
+1. [Setting Up the Theme Provider](#setting-up-the-theme-provider)
+2. [Adding the Theme Selector to Admin](#adding-the-theme-selector-to-admin)
+3. [Configuring Supabase for Theme Storage](#configuring-supabase-for-theme-storage)
+4. [Using the Theme Hook in Components](#using-the-theme-hook-in-components)
+5. [Creating Custom Themes](#creating-custom-themes)
+6. [Available Theme Variables](#available-theme-variables)
+
+## Setting Up the Theme Provider
+
+To make themes available throughout your application, you need to wrap your application with the `ThemeProvider` component in your root layout file.
+
+### Layout Integration
+
+```tsx
+// app/layout.tsx
+import { ThemeProvider } from '@/contexts/ThemeContext';
+
+export default function RootLayout({ 
+  children 
+}: { 
+  children: React.ReactNode 
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+This makes the theme context available to all components in your application. The `ThemeProvider` automatically loads the user's selected theme from storage (Supabase or localStorage) and applies it to the application.
+
+## Adding the Theme Selector to Admin
+
+The `ThemeSelector` component provides a user interface for selecting and customising themes. You can add it to any admin page in your application.
+
+### Admin Page Implementation
+
+```tsx
+// app/admin/theme/page.tsx
+import ThemeSelector from '@/components/admin/applicationSettings/ThemeSelector';
+
+export default function ThemeAdminPage() {
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-2xl font-bold mb-6">Theme Settings</h1>
+      <ThemeSelector />
+    </div>
+  );
+}
+```
+
+The `ThemeSelector` component includes:
+- A dropdown to select from predefined and custom themes
+- Controls for customising theme colours, border radius, and font family
+- A live preview of UI components with the current theme applied
+- The ability to save custom themes
+
+## Configuring Supabase for Theme Storage
+
+The theming system can store theme settings in Supabase for persistence across devices and sessions. To set this up:
+
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+
+2. Add your Supabase credentials to your environment variables:
+
+```env
+# .env.local
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+3. Create the required tables in your Supabase database:
+
+```sql
+-- Table for storing the current theme selection
+CREATE TABLE user_settings (
+  id TEXT PRIMARY KEY,
+  current_theme TEXT NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Table for storing custom themes
+CREATE TABLE custom_themes (
+  name TEXT PRIMARY KEY,
+  settings JSONB NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+If Supabase is not configured or unavailable, the system will automatically fall back to using localStorage for theme storage.
+
+## Using the Theme Hook in Components
+
+You can access the current theme and theme functions in any component using the `useTheme` hook:
+
+```tsx
+import { useTheme } from '@/contexts/ThemeContext';
+
+function MyComponent() {
+  const { currentTheme, setTheme } = useTheme();
+  
+  return (
+    <div>
+      <p>Current theme: {currentTheme.name}</p>
+      <button onClick={() => setTheme('dark')}>Switch to Dark Theme</button>
+    </div>
+  );
+}
+```
+
+The `useTheme` hook provides:
+- `currentTheme`: The current theme settings
+- `setTheme`: Function to switch to a different theme
+- `customizeTheme`: Function to modify the current theme
+- `availableThemes`: Array of available theme names
+- `saveCustomTheme`: Function to save a custom theme
+- `isLoading`: Boolean indicating if themes are still loading
+
+## Creating Custom Themes
+
+You can create custom themes programmatically:
+
+```tsx
+import { useTheme } from '@/contexts/ThemeContext';
+
+function ThemeCreator() {
+  const { customizeTheme, saveCustomTheme } = useTheme();
+  
+  const createBlueTheme = () => {
+    // First customize the current theme
+    customizeTheme({
+      colors: {
+        primary: '#0066cc',
+        secondary: '#4a5568',
+        // ... other colors
+      },
+      borderRadius: '0.5rem',
+      fontFamily: 'Arial, sans-serif'
+    });
+    
+    // Then save it with a name
+    saveCustomTheme('Custom Blue');
+  };
+  
+  return (
+    <button onClick={createBlueTheme}>Create Blue Theme</button>
+  );
+}
+```
+
+## Available Theme Variables
+
+The theming system provides the following CSS variables that you can use in your components:
+
+```css
+:root {
+  --color-primary: #3b82f6;     /* Primary brand colour */
+  --color-secondary: #64748b;   /* Secondary colour */
+  --color-danger: #ef4444;      /* Danger/error colour */
+  --color-success: #22c55e;     /* Success colour */
+  --color-warning: #f59e0b;     /* Warning colour */
+  --color-text: #1f2937;        /* Main text colour */
+  --color-background: #f9fafb;  /* Background colour */
+  --border-radius: 0.375rem;    /* Border radius for elements */
+  --font-family: system-ui, -apple-system, sans-serif; /* Font family */
+}
+```
+
+You can use these variables in your Tailwind classes:
+
+```tsx
+<div className="bg-[var(--color-primary)] text-[var(--color-text)] rounded-[var(--border-radius)]">
+  Themed content
+</div>
+```
+
+Or in your CSS/SCSS:
+
+```css
+.my-element {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+}
+```
+
+These variables are automatically updated when the theme changes, ensuring your UI responds dynamically to theme selections.
